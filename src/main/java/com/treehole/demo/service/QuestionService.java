@@ -105,6 +105,9 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
         if(question.getId()==null){
             //创建
             question.setGmtCreate(System.currentTimeMillis());
+            question.setViewCount(0);
+            question.setLikeCount(0);
+            question.setCommentCount(0);
             questionMapper.insert(question);
         } else {
             //更新
@@ -113,7 +116,13 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
         }
     }
 
+    //增加浏览数
     public void incView(Integer id) {
         questionMapper.updateViewCountById(id);
+    }
+
+    //增加评论数
+    public void incCommentCount(Integer id){
+        questionMapper.incCommentCount(id);
     }
 }

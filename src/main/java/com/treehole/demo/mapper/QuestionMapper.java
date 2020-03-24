@@ -29,4 +29,8 @@ public interface QuestionMapper extends BaseMapper<Question> {
 
     @Select("Update Question Set view_count = view_count + 1 Where id=#{id}")
     Question updateViewCountById(Integer id);
+
+    @Select("Update Question Set comment_count = comment_count + 1 Where id=#{id}")
+    Question incCommentCount(Integer id);
+
 }
