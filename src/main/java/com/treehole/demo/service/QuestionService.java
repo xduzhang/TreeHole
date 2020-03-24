@@ -5,6 +5,8 @@ import com.treehole.demo.entity.PaginationDTO;
 import com.treehole.demo.entity.Question;
 import com.treehole.demo.entity.QuestionVo;
 import com.treehole.demo.entity.User;
+import com.treehole.demo.exception.CustomizeErrorCode;
+import com.treehole.demo.exception.CustomizeException;
 import com.treehole.demo.mapper.QuestionMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +91,9 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
     public QuestionVo getById(Integer id){
 
         Question question = questionMapper.getById(id);
+        if(question==null){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         QuestionVo questionVo = new QuestionVo();
         BeanUtils.copyProperties(question,questionVo);
         User user = userService.getById(question.getCreator());
@@ -106,5 +111,9 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
             question.setGmtModified(question.getGmtCreate());
             questionMapper.updateById(question);
         }
+    }
+
+    public void incView(Integer id) {
+        questionMapper.updateViewCountById(id);
     }
 }

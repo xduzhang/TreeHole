@@ -21,6 +21,8 @@ public class QuestionController {
         Model model
     ){
         QuestionVo  questionVo = questionService.getById(id);
+        //累加浏览
+        questionService.incView(id);
         model.addAttribute("question",questionVo);
         return "question";
     }
