@@ -33,4 +33,8 @@ public interface QuestionMapper extends BaseMapper<Question> {
     @Select("Update Question Set comment_count = comment_count + 1 Where id=#{id}")
     Question incCommentCount(Integer id);
 
+    @Select("Select * From Question where id!=#{id} and tag regexp #{tag}")
+    List<Question> selectByTag(Integer id,String tag);
+
+
 }

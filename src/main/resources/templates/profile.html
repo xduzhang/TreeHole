@@ -26,7 +26,12 @@
                     <div class="media-body">
                         <h4 class="media-heading" th:text="${question.title}">怎么快速学会Spring Boot开发</h4>
                         <span th:text="${question.description}">点击进去看</span><br>
-                        <span class="text-desc"> <span th:text="${question.commentCount}">2</span> 个回复 · <span th:text="${question.viewCount}">3</span> 次浏览 ·<span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span></span>
+                        <span class="text-desc">
+                            <span th:text="${question.commentCount}">2</span> 个回复 · <span th:text="${question.viewCount}">3</span> 次浏览 ·<span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span> ·
+                            <a th:href="@{'/publish/'+${question.id}}" th:class="community-menu" th:if="${session.user!=null && session.user.id == question.creator}">
+                            <span class="glyphicon glyphicon-pencil"  style="margin-bottom: 15px;" aria-hidden="true">编辑</span>
+                            </a>
+                        </span>
                     </div>
                     <div>
                         <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=1)" width="80%" color=#987cb9 SIZE=3>

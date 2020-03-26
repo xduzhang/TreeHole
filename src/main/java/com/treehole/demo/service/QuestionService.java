@@ -8,6 +8,7 @@ import com.treehole.demo.entity.User;
 import com.treehole.demo.exception.CustomizeErrorCode;
 import com.treehole.demo.exception.CustomizeException;
 import com.treehole.demo.mapper.QuestionMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,5 +125,23 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
     //增加评论数
     public void incCommentCount(Integer id){
         questionMapper.incCommentCount(id);
+    }
+
+    //根据标签查询相关的问题
+    public List<QuestionVo> selectByTag(QuestionVo questionVo){
+        if(StringUtils.isBlank(questionVo.getTag())){
+            return new ArrayList<>();
+        }
+        String tag = questionVo.getTag().replace(',','|').replace('，','|');
+        List<Question> list = questionMapper.selectByTag(questionVo.getId(),tag);
+        List<QuestionVo> questionVoList = new ArrayList<>();
+        for(Question question : list){
+            QuestionVo questionVo1 = new QuestionVo();
+            BeanUtils.copyProperties(question,questionVo1);
+            User user = userService.getById(question.getCreator());
+            questionVo1.setUser(user);
+            questionVoList.add(questionVo1);
+        }
+       return questionVoList;
     }
 }

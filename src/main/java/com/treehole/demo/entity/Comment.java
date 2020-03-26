@@ -19,4 +19,5 @@ public class Comment extends Model<Comment> {
     private Integer likeCount;
     private String content;
     private Long gmtModified;
+    private Integer commentCount;
 }
