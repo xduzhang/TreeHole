@@ -36,5 +36,10 @@ public interface QuestionMapper extends BaseMapper<Question> {
     @Select("Select * From Question where id!=#{id} and tag regexp #{tag}")
     List<Question> selectByTag(Integer id,String tag);
 
+    @Select("Select count(1) from question Where tag regexp #{tag}")
+    Integer countBySearch(String tag);
+
+    @Select("Select * From Question where tag regexp #{tag} ORDER BY gmt_create desc limit #{offset},#{size}")
+    List<Question> selectBySearch(String tag,Integer offset,Integer size);
 
 }

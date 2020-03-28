@@ -1,14 +1,14 @@
 package com.treehole.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.treehole.demo.entity.Comment;
-import com.treehole.demo.entity.CommentDTO;
-import com.treehole.demo.entity.Question;
-import com.treehole.demo.entity.User;
+import com.treehole.demo.entity.*;
 import com.treehole.demo.entity.enums.CommentTypeEnum;
+import com.treehole.demo.entity.enums.NotificationEnum;
+import com.treehole.demo.entity.enums.NotificationStatusEnum;
 import com.treehole.demo.exception.CustomizeErrorCode;
 import com.treehole.demo.exception.CustomizeException;
 import com.treehole.demo.mapper.CommentMapper;
+import com.treehole.demo.mapper.NotificationMapper;
 import com.treehole.demo.mapper.QuestionMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,12 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
 
+    //保存评论
     @Transactional
-    public void saveByCheck(Comment comment) {
+    public void saveByCheck(Comment comment,User commentator) {
         if (comment.getParentId() == null || comment.getParentId() == 0){
             throw new CustomizeException(CustomizeErrorCode.TARGET_PARAM_NOT_FOUND);
         }
@@ -47,9 +50,18 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
             if(dbcomment == null){
                 throw new CustomizeException(CustomizeErrorCode.COMMENT_NOT_FOUND);
             } else {
+
+                //查询评论的原问题
+                Question question = questionMapper.getById(dbcomment.getParentId());
+                if(question==null){
+                    throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+                }
                 commentMapper.insert(comment);
                 //增加评论的评论数
                 commentMapper.incCommentCount(comment.getParentId());
+                //增加通知
+                createNotify(comment,dbcomment.getCommentator(),commentator.getName(),question.getTitle(),NotificationEnum.REPLY_COMMENT.getType(),question.getId());
+
             }
         } else {
             //回复问题
@@ -59,7 +71,23 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
             }
             commentMapper.insert(comment);
             questionMapper.incCommentCount(comment.getParentId());
+            //增加通知
+            createNotify(comment,question.getCreator(),commentator.getName(),question.getTitle(),NotificationEnum.REPLY_QUESTION.getType(),question.getId());
         }
+    }
+
+    //增加通知
+    private void createNotify(Comment comment, String receiver,String notifierName,String outerTitle,Integer type,Integer outerId) {
+        Notification notification = new Notification();
+        notification.setGmtCreate(System.currentTimeMillis());
+        notification.setType(type);
+        notification.setOuterId(outerId);
+        notification.setNotifier(comment.getCommentator());
+        notification.setStatus(NotificationStatusEnum.UNREAD.getStatus());
+        notification.setReceiver(receiver);
+        notification.setNotifierName(notifierName);
+        notification.setOuterTitle(outerTitle);
+        notificationService.save(notification);
     }
 
     public List<CommentDTO> listByQuestionId(Integer id,Integer type) {

@@ -41,7 +41,7 @@ public class CommentController {
         comment.setCommentator(user.getId());
         comment.setLikeCount(0);
         comment.setCommentCount(0);
-        commentService.saveByCheck(comment);
+        commentService.saveByCheck(comment,user);
 
         return ResultDTO.okOf();
     }

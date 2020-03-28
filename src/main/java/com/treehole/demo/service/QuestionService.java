@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
@@ -27,11 +29,23 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
     private UserService userService;
 
     //查询所有的questionVo对象
-    public PaginationDTO findQuestionList(Integer page, Integer size){
+    public PaginationDTO findQuestionList(String search,Integer page, Integer size){
 
+        Integer totalCount = 0;
+        //搜索功能
+        if(StringUtils.isNotBlank(search)){
+            String[] tags = StringUtils.split(search," ");
+            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+            System.out.println(search);
+            totalCount = questionMapper.countBySearch(search);
+        } else {
+            //总的数据数
+            totalCount = questionMapper.count();
+        }
          PaginationDTO paginationDTO =  new PaginationDTO();
          //总的数据数
-         Integer totalCount = questionMapper.count();
+         //Integer totalCount = questionMapper.count();
+
          paginationDTO.setPagination(totalCount,page,size);
          if(page < 1){
              page = 1;
@@ -42,9 +56,18 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
 
          //size*(i-1)
          Integer offset = size * (page-1);
-         List<Question> questions = questionMapper.listQuestion(offset,size);
-         List<QuestionVo> questionVoList = new ArrayList<>();
 
+         List<Question> questions = new ArrayList<>();
+
+         if(StringUtils.isNotBlank(search)) {
+             questions = questionMapper.selectBySearch(search,offset,size);
+         } else {
+             questions = questionMapper.listQuestion(offset,size);
+         }
+
+         //List<Question> questions = questionMapper.listQuestion(offset,size);
+
+         List<QuestionVo> questionVoList = new ArrayList<>();
 
          for(Question question : questions){
              User user = userService.getById(question.getCreator());
@@ -55,9 +78,10 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
          }
 
          //把所有的列表放进去
-         paginationDTO.setQuestions(questionVoList);
+         paginationDTO.setData(questionVoList);
          return paginationDTO;
     }
+
 
     //查询固定的id的所有questionVo对象
     public PaginationDTO findQuestionListById(String userId, Integer page, Integer size) {
@@ -84,7 +108,7 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
             questionVoList.add(questionVo);
         }
         //把所有的列表放进去
-        paginationDTO.setQuestions(questionVoList);
+        paginationDTO.setData(questionVoList);
         return paginationDTO;
     }
 
