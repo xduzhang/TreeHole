@@ -72,6 +72,14 @@
 
             <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                 <h3>热门话题</h3>
+                <hr>
+                <br>
+                <br>
+                <ul class="quesion-related">
+                    <li th:each="welcomequestion : ${welcomequestions}">
+                        <a th:href="@{'/question/'+${welcomequestion.id}}" th:text="${welcomequestion.title}"></a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

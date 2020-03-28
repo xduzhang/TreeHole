@@ -54,6 +54,7 @@ public class PublishController {
         HttpSession session,
         Model model
     ){
+
         model.addAttribute("title",title);
         model.addAttribute("description",description);
         model.addAttribute("tag",tag);

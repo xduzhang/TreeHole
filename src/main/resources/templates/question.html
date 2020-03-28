@@ -73,7 +73,10 @@
                                     </h5>
                                     <div th:text="${comment.content}">我是回复内容</div>
                                     <div class="menu">
-                                        <span class="glyphicon glyphicon-thumbs-up icon"></span>
+                                        <span th:onclick="like([[${comment.id}]],[[${session.user}]],[[${comment.parentId}]])" class="comment-icon" id="likethis">
+                                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                                            <span th:text="${comment.likeCount}"></span>
+                                        </span>
                                         <span th:data-id="${comment.id}" onclick="collapseComments(this)" class="comment-icon">
                                              <span class="glyphicon glyphicon-comment"></span>
                                              <span th:text="${comment.commentCount}"></span>
@@ -177,5 +180,32 @@
         </div>
     </div>
     <div th:insert="common/footer :: foot"></div>
+    <script>
+
+        function like(commentId,user,parentId) {
+            //验证用户是否登录
+            if(user == '' || user == null){
+                alert("未登录，请先登录！");
+                return;
+            }
+            var comments = $("#likethis");
+            //点赞
+            $.ajax({
+                url: "/like",
+                data: {'id' :commentId},
+                method: "post",
+                success:function (data) {
+                    if(data == "success"){
+                        comments.addClass("active");
+                    }
+                    if(data == "ishave"){
+                        comments.addClass("active");
+                        alert("您已经点赞过了！");
+                    }
+                }
+            })
+        }
+    </script>
 </body>
+
 </html>

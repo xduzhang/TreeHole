@@ -111,4 +111,8 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
         commentMapper.incCommentCount(id);
     }
 
+    //增加点赞的评论数
+    public void incLikeCount(Integer id) {
+        commentMapper.incLikeCount(id);
+    }
 }

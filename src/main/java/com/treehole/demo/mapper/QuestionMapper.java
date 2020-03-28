@@ -42,4 +42,7 @@ public interface QuestionMapper extends BaseMapper<Question> {
     @Select("Select * From Question where tag regexp #{tag} ORDER BY gmt_create desc limit #{offset},#{size}")
     List<Question> selectBySearch(String tag,Integer offset,Integer size);
 
+    @Select("Select * from question ORDER BY (comment_count*0.7 + view_count*0.3) desc LIMIT 0,10")
+    List<Question> listByCommentsCount();
+
 }

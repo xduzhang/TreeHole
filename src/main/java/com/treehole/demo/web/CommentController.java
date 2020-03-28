@@ -1,14 +1,19 @@
 package com.treehole.demo.web;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.treehole.demo.entity.*;
 import com.treehole.demo.exception.CustomizeErrorCode;
 import com.treehole.demo.service.CommentService;
+import com.treehole.demo.service.LikehistoryService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -16,6 +21,9 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private LikehistoryService likehistoryService;
 
     @ResponseBody
     @RequestMapping(value = "/comment",method = RequestMethod.POST)
@@ -53,4 +61,26 @@ public class CommentController {
         return ResultDTO.okOf(commentDTOS);
     }
 
+
+    //点赞
+    @Transactional
+    @RequestMapping("/like")
+    @ResponseBody
+    public String incLike(Integer id, HttpSession session){
+        User user = (User) session.getAttribute("user");
+        QueryWrapper<Likehistory> historyQueryWrapper = new QueryWrapper<>();
+        historyQueryWrapper.eq("user",user.getId());
+        historyQueryWrapper.eq("likecomment",id);
+        List<Likehistory> historyList = likehistoryService.list(historyQueryWrapper);
+        if(historyList.isEmpty()){
+            commentService.incLikeCount(id);
+            Likehistory likehistory = new Likehistory();
+            likehistory.setLikecomment(id);
+            likehistory.setUser(user.getId());
+            likehistoryService.save(likehistory);
+            return  "success";
+        } else {
+            return  "ishave";
+        }
+    }
 }

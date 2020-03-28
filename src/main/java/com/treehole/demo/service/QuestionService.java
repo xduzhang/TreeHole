@@ -168,4 +168,18 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
         }
        return questionVoList;
     }
+
+    //查询评论数最多的question
+    public List<QuestionVo> selectByCommentCount() {
+        List<Question> Welquestions = questionMapper.listByCommentsCount();
+        List<QuestionVo> welquestionVoList = new ArrayList<>();
+        for(Question question : Welquestions){
+            QuestionVo questionVo1 = new QuestionVo();
+            BeanUtils.copyProperties(question,questionVo1);
+            User user = userService.getById(question.getCreator());
+            questionVo1.setUser(user);
+            welquestionVoList.add(questionVo1);
+        }
+        return welquestionVoList;
+    }
 }

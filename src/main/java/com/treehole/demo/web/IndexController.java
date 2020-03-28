@@ -38,6 +38,10 @@ public class IndexController {
         PaginationDTO pagination = questionService.findQuestionList(search,page,size);
         model.addAttribute("pagination",pagination);
         model.addAttribute("search",search);
+        //热门问题
+        List<QuestionVo> welcomequestion = questionService.selectByCommentCount();
+        model.addAttribute("welcomequestions",welcomequestion);
+
         User user = (User) session.getAttribute("user");
         if(user != null){
             Integer unreadCount = notificationService.unreadCount(user.getId());

@@ -14,4 +14,8 @@ public interface CommentMapper extends BaseMapper<Comment> {
 
     @Select("Update Comment Set comment_count = comment_count + 1 Where id=#{id}")
     void incCommentCount(Integer id);
+
+    @Select("Update Comment Set like_count = like_count + 1 Where id=#{id}")
+    void incLikeCount(Integer id);
+
 }
