@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface NotificationMapper extends BaseMapper<Notification> {
 
-    @Select("Select count(1) from Notification Where receiver=#{id} And status= 0 ")
+    @Select("Select count(1) from notification Where receiver=#{id} And status= 0 ")
     Integer unreadCount(String id);
 
-    @Select("Select count(1) from Notification Where receiver=#{id}")
+    @Select("Select count(1) from notification Where receiver=#{id}")
     Integer totalCount(String id);
 
-    @Select("Select * From Notification Where receiver=#{userId} ORDER BY gmt_create desc limit #{offset},#{size}")
+    @Select("Select * From notification Where receiver=#{userId} ORDER BY gmt_create desc limit #{offset},#{size}")
     List<Notification> listNotificationById(String userId, Integer offset, Integer size);
 
 }

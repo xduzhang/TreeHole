@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    @Select("Select * From Comment Where parent_id=#{id} and type=#{type}")
+    @Select("Select * From comment Where parent_id=#{id} and type=#{type}")
     List<Comment> listByQuestionId(Integer id,Integer type);
 
-    @Select("Update Comment Set comment_count = comment_count + 1 Where id=#{id}")
+    @Select("Update comment Set comment_count = comment_count + 1 Where id=#{id}")
     void incCommentCount(Integer id);
 
-    @Select("Update Comment Set like_count = like_count + 1 Where id=#{id}")
+    @Select("Update comment Set like_count = like_count + 1 Where id=#{id}")
     void incLikeCount(Integer id);
 
 }

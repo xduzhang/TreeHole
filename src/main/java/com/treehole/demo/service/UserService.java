@@ -14,15 +14,19 @@ public class UserService extends ServiceImpl<UserMapper,User> {
 
 
 
+    //@Autowired
+    //private UserMapper userMapper;
+
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
 
     //验证用户的存在性
     public String checkUserByName(String name) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name",name);
-        User user = userMapper.selectOne(queryWrapper);
+        //User user = userMapper.selectOne(queryWrapper);
+        User user = userService.getOne(queryWrapper);
         if(user == null){
             return "101";  //用户不存在
         }else{
@@ -34,7 +38,8 @@ public class UserService extends ServiceImpl<UserMapper,User> {
     public String checkUserById(String email) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",email);
-        User user = userMapper.selectOne(queryWrapper);
+        //User user = userMapper.selectOne(queryWrapper);
+        User user = userService.getOne(queryWrapper);
         if(user == null){
             return "201";  //用户不存在
         }else{
@@ -46,7 +51,8 @@ public class UserService extends ServiceImpl<UserMapper,User> {
     public String loginCheck(User loginUser, HttpSession session){
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",loginUser.getId());
-        User user = userMapper.selectOne(queryWrapper);
+        User user = userService.getOne(queryWrapper);
+        //User user = userMapper.selectOne(queryWrapper);
         if(loginUser.getPassword().equals(user.getPassword())){
             session.setAttribute("user",user);
             return "101";
